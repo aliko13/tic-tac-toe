@@ -9,6 +9,7 @@ CREATE TABLE game
 (
     id     SERIAL PRIMARY KEY,
     turn   TEXT NOT NULL,
-    winner TEXT NOT NULL,
+    winner BIGINT NOT NULL,
+    in_progress BOOLEAN,
     board  TEXT[][]
 );

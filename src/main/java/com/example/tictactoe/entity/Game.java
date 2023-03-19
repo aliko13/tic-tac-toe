@@ -1,12 +1,9 @@
 package com.example.tictactoe.entity;
 
+import com.example.tictactoe.exception.PlayerNotFoundException;
 import com.vladmihalcea.hibernate.type.array.StringArrayType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
@@ -16,18 +13,39 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "game")
 public class Game extends AbstractEntity {
-    @NotNull
-    private String turn;
-    @NotNull
-    private String winner;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @Column(name = "turn")
+    private long playerOnTurn;
+
+    @Column(name = "winner")
+    private Long winnerId;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Player> players = new ArrayList<>();
 
     @Column(columnDefinition = "text[][]")
     @Type(StringArrayType.class)
     private String[][] board;
+
+    @Column(name = "in_progress")
+    private boolean inProgress;
+
+    public void switchPlayer() throws PlayerNotFoundException {
+        playerOnTurn = players.stream()
+                .map(Player::getId)
+                .filter(id -> id != playerOnTurn)
+                .findFirst()
+                .orElseThrow(PlayerNotFoundException::new);
+    }
+
+    public Player getCurrentPlayer() throws PlayerNotFoundException {
+        return players.stream()
+                .filter(player -> player.getId() != playerOnTurn)
+                .findFirst()
+                .orElseThrow(PlayerNotFoundException::new);
+    }
 }

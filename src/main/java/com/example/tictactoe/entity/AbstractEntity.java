@@ -3,11 +3,13 @@ package com.example.tictactoe.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.ZonedDateTime;
 
+@Getter
 @MappedSuperclass
 @EqualsAndHashCode
 public abstract class AbstractEntity {
