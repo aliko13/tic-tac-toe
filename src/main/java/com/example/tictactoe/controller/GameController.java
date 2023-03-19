@@ -23,7 +23,7 @@ public class GameController {
     }
 
     @PostMapping("/{gameId}/moves")
-    public Game makeMove(@PathVariable Long gameId, @RequestBody MoveRequestDTO request) throws Exception {
+    public GameResponseDTO makeMove(@PathVariable Long gameId, @RequestBody MoveRequestDTO request) throws Exception {
         return gameService.makeMove(gameId, request.getPlayerId(), request.getRow(), request.getCol());
     }
 }

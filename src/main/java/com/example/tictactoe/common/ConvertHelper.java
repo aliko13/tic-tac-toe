@@ -1,4 +1,4 @@
-package com.example.tictactoe.convert;
+package com.example.tictactoe.common;
 
 import java.util.Collection;
 import java.util.List;

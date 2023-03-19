@@ -1,19 +1,25 @@
 package com.example.tictactoe.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "player")
 public class Player extends AbstractEntity {
+    public Player(String name, String symbol) {
+        this.name = name;
+        this.symbol = symbol;
+    }
+
     @NotNull
     private String name;
     @NotNull
     private String symbol;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Game game;
 }

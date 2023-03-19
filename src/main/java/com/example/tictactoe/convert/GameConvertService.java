@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.example.tictactoe.convert.ConvertHelper.toList;
+import static com.example.tictactoe.common.ConvertHelper.toList;
 
 @Component
 public class GameConvertService {

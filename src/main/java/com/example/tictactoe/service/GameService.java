@@ -51,14 +51,13 @@ public class GameService {
         Game game = Game.builder()
                 .players(List.of(firstPlayer, secondPlayer))
                 .playerOnTurn(firstPlayer.getId())
-                .inProgress(true)
                 .build();
         Game savedGame = saveGame(game);
         return gameConvertService.toGameResponseDto(savedGame);
     }
 
     @CacheEvict(value = "games", key = "#gameId")
-    public synchronized Game makeMove(Long gameId, long playerId, int row, int col) throws Exception {
+    public synchronized GameResponseDTO makeMove(Long gameId, long playerId, int row, int col) throws Exception {
         Game game = getGame(gameId);
         if (game.getPlayerOnTurn() != playerId) {
             throw new PlayerNotFoundException();
@@ -79,8 +78,9 @@ public class GameService {
         } else {
             game.switchPlayer();
         }
-        saveGame(game);
-        return game;
+        game.setBoard(board);
+        Game savedGame = saveGame(game);
+        return gameConvertService.toGameResponseDto(savedGame);
     }
 }
 

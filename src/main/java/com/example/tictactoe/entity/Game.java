@@ -24,15 +24,15 @@ public class Game extends AbstractEntity {
     @Column(name = "winner")
     private Long winnerId;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Player> players = new ArrayList<>();
 
     @Column(columnDefinition = "text[][]")
     @Type(StringArrayType.class)
-    private String[][] board;
+    private String[][] board = new String[3][3];
 
     @Column(name = "in_progress")
-    private boolean inProgress;
+    private boolean inProgress = true;
 
     public void switchPlayer() throws PlayerNotFoundException {
         playerOnTurn = players.stream()
@@ -44,7 +44,7 @@ public class Game extends AbstractEntity {
 
     public Player getCurrentPlayer() throws PlayerNotFoundException {
         return players.stream()
-                .filter(player -> player.getId() != playerOnTurn)
+                .filter(player -> player.getId() == playerOnTurn)
                 .findFirst()
                 .orElseThrow(PlayerNotFoundException::new);
     }
