@@ -29,7 +29,7 @@ public class Game extends AbstractEntity {
 
     @Column(columnDefinition = "text[][]")
     @Type(StringArrayType.class)
-    private String[][] board;
+    private String[][] board = new String[3][3];
 
     @Column(name = "in_progress")
     @Builder.Default

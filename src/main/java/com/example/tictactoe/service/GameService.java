@@ -44,16 +44,24 @@ public class GameService {
 
     @Transactional
     public GameResponseDTO createGame(GameRequestDTO requestDTO) {
-        Player firstPlayer = playerRepository.save(new Player(requestDTO.getFirstPlayer(), "X"));
-        Player secondPlayer =  playerRepository.save(new Player(requestDTO.getSecondPlayer(), "O"));
-        Game savedGame = saveGame(Game.builder()
+        Player firstPlayer = new Player(requestDTO.getFirstPlayer(), "X");
+        Player secondPlayer = new Player(requestDTO.getSecondPlayer(), "O");
+
+        firstPlayer = playerRepository.saveAndFlush(firstPlayer);
+        secondPlayer = playerRepository.saveAndFlush(secondPlayer);
+
+        Game game = Game.builder()
                 .players(List.of(firstPlayer, secondPlayer))
                 .playerOnTurn(firstPlayer.getId())
                 .board(new String[3][3])
-                .build());
-        firstPlayer.setGame(savedGame);
-        secondPlayer.setGame(savedGame);
-        return gameConvertService.toGameResponseDto(savedGame);
+                .build();
+
+        game = gameRepository.saveAndFlush(game);
+
+        firstPlayer.setGame(game);
+        secondPlayer.setGame(game);
+
+        return gameConvertService.toGameResponseDto(game);
     }
 
     @Transactional

@@ -84,16 +84,25 @@ public class GameServiceTest {
         String firstPlayerName = "Player 1";
         String secondPlayerName = "Player 2";
 
-        Player firstPlayer = mock(Player.class);
-        Player secondPlayer = mock(Player.class);
+        Player firstPlayer = new Player(firstPlayerName, "X");
+        Player secondPlayer = new Player(secondPlayerName, "O");
 
-        Game game = mock(Game.class);
-        GameRequestDTO requestDTO = GameRequestDTO.builder().firstPlayer(firstPlayerName).secondPlayer(secondPlayerName).build();
+        GameRequestDTO requestDTO = GameRequestDTO.builder()
+                .firstPlayer(firstPlayerName)
+                .secondPlayer(secondPlayerName)
+                .build();
         GameResponseDTO responseDTO = new GameResponseDTO();
 
-        when(playerRepository.saveAndFlush(any(Player.class))).thenReturn(firstPlayer, secondPlayer);
-        when(gameRepository.saveAndFlush(any(Game.class))).thenReturn(game);
-        when(gameConvertService.toGameResponseDto(game)).thenReturn(responseDTO);
+        when(playerRepository.saveAndFlush(firstPlayer)).thenReturn(firstPlayer);
+        when(playerRepository.saveAndFlush(secondPlayer)).thenReturn(secondPlayer);
+
+        Game savedGame = new Game();
+        savedGame.setPlayers(List.of(firstPlayer, secondPlayer));
+        savedGame.setPlayerOnTurn(firstPlayer.getId());
+        savedGame.setBoard(new String[3][3]);
+        when(gameRepository.saveAndFlush(any(Game.class))).thenReturn(savedGame);
+
+        when(gameConvertService.toGameResponseDto(savedGame)).thenReturn(responseDTO);
 
         // when
         GameResponseDTO result = gameService.createGame(requestDTO);
@@ -138,7 +147,7 @@ public class GameServiceTest {
         verify(gameRepository).findById(gameId);
         verify(gameConvertService).toGameResponseDto(game);
 
-        assertEquals(game.getPlayerOnTurn(), secondPlayerId);
+        assertEquals(secondPlayerId, game.getPlayerOnTurn());
         assertTrue(game.isInProgress());
         assertNull(game.getWinnerId());
         assertThat(game.getBoard()[0][0]).isEqualTo("X");
