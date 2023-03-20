@@ -29,9 +29,10 @@ public class Game extends AbstractEntity {
 
     @Column(columnDefinition = "text[][]")
     @Type(StringArrayType.class)
-    private String[][] board = new String[3][3];
+    private String[][] board;
 
     @Column(name = "in_progress")
+    @Builder.Default
     private boolean inProgress = true;
 
     public void switchPlayer() throws PlayerNotFoundException {

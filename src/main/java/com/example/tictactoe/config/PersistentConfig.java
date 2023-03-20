@@ -1,4 +1,4 @@
-package com.example.tictactoe.common;
+package com.example.tictactoe.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

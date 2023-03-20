@@ -12,13 +12,13 @@ CREATE TABLE game
     created_date TIMESTAMP NOT NULL,
     turn   TEXT,
     winner BIGINT,
-    in_progress BOOLEAN,
+    in_progress BOOLEAN DEFAULT true,
     board  TEXT[][]
 );
 
 -- Add foreign key constraint to map the relationship between Game and Player
 ALTER TABLE player ADD COLUMN game_id BIGINT;
-ALTER TABLE player ADD CONSTRAINT fk_player_game_id FOREIGN KEY (game_id) REFERENCES game(id) ON DELETE SET NULL;
+ALTER TABLE player ADD CONSTRAINT fk_player_game_id FOREIGN KEY (game_id) REFERENCES game(id);
 
 -- Add foreign key constraint to map the relationship between Game and Player
-ALTER TABLE game ADD CONSTRAINT fk_game_winner_id FOREIGN KEY (winner) REFERENCES player(id) ON DELETE SET NULL;
+ALTER TABLE game ADD CONSTRAINT fk_game_winner_id FOREIGN KEY (winner) REFERENCES player(id);

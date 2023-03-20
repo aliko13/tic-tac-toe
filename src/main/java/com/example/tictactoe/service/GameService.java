@@ -10,10 +10,8 @@ import com.example.tictactoe.exception.InvalidMoveException;
 import com.example.tictactoe.exception.PlayerNotFoundException;
 import com.example.tictactoe.repository.GameRepository;
 import com.example.tictactoe.repository.PlayerRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,28 +33,29 @@ public class GameService {
         this.playerRepository = playerRepository;
     }
 
-    @Cacheable(value = "games", key = "#gameId")
     public Game getGame(Long gameId) throws GameNotFoundException {
         return gameRepository.findById(gameId).orElseThrow(GameNotFoundException::new);
     }
 
-    @CachePut(value = "games", key = "#game.id")
     public Game saveGame(Game game) {
         return gameRepository.saveAndFlush(game);
     }
 
+    @Transactional
     public GameResponseDTO createGame(String firstPlayerName, String secondPlayerName) {
-        Player firstPlayer = playerRepository.saveAndFlush(new Player(firstPlayerName, "X"));
-        Player secondPlayer =  playerRepository.saveAndFlush(new Player(secondPlayerName, "O"));
+        Player firstPlayer = playerRepository.save(new Player(firstPlayerName, "X"));
+        Player secondPlayer =  playerRepository.save(new Player(secondPlayerName, "O"));
         Game game = Game.builder()
                 .players(List.of(firstPlayer, secondPlayer))
                 .playerOnTurn(firstPlayer.getId())
+                .board(new String[3][3])
                 .build();
         Game savedGame = saveGame(game);
+        firstPlayer.setGame(game);
+        secondPlayer.setGame(game);
         return gameConvertService.toGameResponseDto(savedGame);
     }
 
-    @CacheEvict(value = "games", key = "#gameId")
     public synchronized GameResponseDTO makeMove(Long gameId, long playerId, int row, int col) throws Exception {
         Game game = getGame(gameId);
         if (game.getPlayerOnTurn() != playerId) {

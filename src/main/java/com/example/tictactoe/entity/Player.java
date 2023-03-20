@@ -10,6 +10,7 @@ import lombok.*;
 @Entity
 @Table(name = "player")
 public class Player extends AbstractEntity {
+
     public Player(String name, String symbol) {
         this.name = name;
         this.symbol = symbol;
@@ -17,9 +18,11 @@ public class Player extends AbstractEntity {
 
     @NotNull
     private String name;
+
     @NotNull
     private String symbol;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
+
+    @ManyToOne
+    @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 }

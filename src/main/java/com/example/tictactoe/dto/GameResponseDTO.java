@@ -13,7 +13,7 @@ import java.util.List;
 public class GameResponseDTO {
     long id;
     ZonedDateTime createdDate;
-    long winnerId;
+    Long winnerId;
     long playerOnTurn;
     boolean inProgress;
     String[][] board;
