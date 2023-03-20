@@ -20,6 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -51,13 +52,13 @@ public class GameControllerTest {
         GameRequestDTO requestDTO = GameRequestDTO.builder().firstPlayer(firstPlayerName).secondPlayer(secondPlayerName).build();
         GameResponseDTO responseDTO = GameResponseDTO.builder().id(gameId).players(players).build();
 
-        given(gameService.createGame(firstPlayerName, secondPlayerName)).willReturn(responseDTO);
+        when(gameService.createGame(any(GameRequestDTO.class))).thenReturn(responseDTO);
 
         // when / then
         String contentAsString = mockMvc.perform(post("/games")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn()
                 .getResponse()

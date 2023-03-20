@@ -1,6 +1,7 @@
 package com.example.tictactoe.service;
 
 import com.example.tictactoe.convert.GameConvertService;
+import com.example.tictactoe.dto.GameRequestDTO;
 import com.example.tictactoe.dto.GameResponseDTO;
 import com.example.tictactoe.entity.AbstractEntity;
 import com.example.tictactoe.entity.Game;
@@ -87,17 +88,18 @@ public class GameServiceTest {
         Player secondPlayer = mock(Player.class);
 
         Game game = mock(Game.class);
-        GameResponseDTO gameResponseDTO = new GameResponseDTO();
+        GameRequestDTO requestDTO = GameRequestDTO.builder().firstPlayer(firstPlayerName).secondPlayer(secondPlayerName).build();
+        GameResponseDTO responseDTO = new GameResponseDTO();
 
         when(playerRepository.saveAndFlush(any(Player.class))).thenReturn(firstPlayer, secondPlayer);
         when(gameRepository.saveAndFlush(any(Game.class))).thenReturn(game);
-        when(gameConvertService.toGameResponseDto(game)).thenReturn(gameResponseDTO);
+        when(gameConvertService.toGameResponseDto(game)).thenReturn(responseDTO);
 
         // when
-        GameResponseDTO result = gameService.createGame(firstPlayerName, secondPlayerName);
+        GameResponseDTO result = gameService.createGame(requestDTO);
 
         // then
-        assertEquals(gameResponseDTO, result);
+        assertEquals(responseDTO, result);
     }
 
     @Test

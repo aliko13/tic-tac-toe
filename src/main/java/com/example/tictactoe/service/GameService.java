@@ -1,6 +1,7 @@
 package com.example.tictactoe.service;
 
 import com.example.tictactoe.convert.GameConvertService;
+import com.example.tictactoe.dto.GameRequestDTO;
 import com.example.tictactoe.dto.GameResponseDTO;
 import com.example.tictactoe.entity.Game;
 import com.example.tictactoe.entity.Player;
@@ -42,9 +43,9 @@ public class GameService {
     }
 
     @Transactional
-    public GameResponseDTO createGame(String firstPlayerName, String secondPlayerName) {
-        Player firstPlayer = playerRepository.save(new Player(firstPlayerName, "X"));
-        Player secondPlayer =  playerRepository.save(new Player(secondPlayerName, "O"));
+    public GameResponseDTO createGame(GameRequestDTO requestDTO) {
+        Player firstPlayer = playerRepository.save(new Player(requestDTO.getFirstPlayer(), "X"));
+        Player secondPlayer =  playerRepository.save(new Player(requestDTO.getSecondPlayer(), "O"));
         Game game = Game.builder()
                 .players(List.of(firstPlayer, secondPlayer))
                 .playerOnTurn(firstPlayer.getId())
@@ -56,13 +57,14 @@ public class GameService {
         return gameConvertService.toGameResponseDto(savedGame);
     }
 
+    @Transactional
     public synchronized GameResponseDTO makeMove(Long gameId, long playerId, int row, int col) throws Exception {
         Game game = getGame(gameId);
-        if (game.getPlayerOnTurn() != playerId) {
-            throw new PlayerNotFoundException();
-        }
         if (!game.isInProgress()) {
-            throw new GameOverException();
+            throw new GameOverException("Game is already ended");
+        }
+        if (game.getPlayerOnTurn() != playerId) {
+            throw new PlayerNotFoundException("Wrong player turn");
         }
         String[][] board = game.getBoard();
         if (board[row][col] != null) {
@@ -72,8 +74,10 @@ public class GameService {
         if (checkWinner(board, game.getCurrentPlayer().getSymbol())) {
             game.setWinnerId(game.getCurrentPlayer().getId());
             game.setInProgress(false);
+            throw new GameOverException("Game is over, winner is: "+game.getCurrentPlayer().getName());
         } else if (checkDraw(board)) {
             game.setInProgress(false);
+            throw new GameOverException("Game is ended with draw, no winner");
         } else {
             game.switchPlayer();
         }
