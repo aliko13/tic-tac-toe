@@ -13,7 +13,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Component
 public class HandlerHelper<T> {
 
-    @ExceptionHandler({PlayerNotFoundException.class, GameOverException.class, InvalidMoveException.class, GameNotFoundException.class})
+    @ExceptionHandler({
+            PlayerNotFoundException.class,
+            GameOverException.class,
+            InvalidMoveException.class,
+            GameNotFoundException.class
+    })
     public ResponseEntity<String> handleGameExceptions(Exception ex) {
         HttpStatus status;
         if (ex instanceof PlayerNotFoundException || ex instanceof GameNotFoundException) {

@@ -46,14 +46,13 @@ public class GameService {
     public GameResponseDTO createGame(GameRequestDTO requestDTO) {
         Player firstPlayer = playerRepository.save(new Player(requestDTO.getFirstPlayer(), "X"));
         Player secondPlayer =  playerRepository.save(new Player(requestDTO.getSecondPlayer(), "O"));
-        Game game = Game.builder()
+        Game savedGame = saveGame(Game.builder()
                 .players(List.of(firstPlayer, secondPlayer))
                 .playerOnTurn(firstPlayer.getId())
                 .board(new String[3][3])
-                .build();
-        Game savedGame = saveGame(game);
-        firstPlayer.setGame(game);
-        secondPlayer.setGame(game);
+                .build());
+        firstPlayer.setGame(savedGame);
+        secondPlayer.setGame(savedGame);
         return gameConvertService.toGameResponseDto(savedGame);
     }
 
