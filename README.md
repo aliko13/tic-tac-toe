@@ -1,4 +1,4 @@
-# tic-tac-toe application for AdSquare
+# tic-tac-toe application
 
 ## Requirements
 
